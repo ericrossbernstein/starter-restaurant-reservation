@@ -56,11 +56,25 @@ function hasOnlyValidProperties(req, res, next) {
 
 function hasValidDate(req, res, next) {
   const { data = {} } = req.body;
+  const reservation_date = new Date(data["reservation_date"]);
+  const day = reservation_date.getUTCDay();
 
   if (isNaN(Date.parse(data["reservation_date"]))) {
     return next({
       status: 400,
       message: `Invalid reservation_date`,
+    });
+  }
+  if (day === 2) {
+    return next({
+      status: 400,
+      message: `Restaurant is closed on Tuesdays`,
+    });
+  }
+  if (reservation_date < new Date()) {
+    return next({
+      status: 400,
+      message: `Reservation must be set in the future`,
     });
   }
   next();

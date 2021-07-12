@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
-import ErrorAlert from "../layout/ErrorAlert";
+import ReservationErrors from "./ReservationErrors";
 
 export const ReservationNew = () => {
   const initialReservationState = {
@@ -16,7 +16,7 @@ export const ReservationNew = () => {
   const [reservation, setReservation] = useState({
     ...initialReservationState,
   });
-  const [reservationError, setReservationError] = useState(null);
+  const [reservationErrors, setReservationErrors] = useState(null);
   const history = useHistory();
 
   const changeHandler = (event) => {
@@ -33,17 +33,46 @@ export const ReservationNew = () => {
     }
   };
 
+  function hasValidDate(reservation) {
+    const date = reservation.reservation_date;
+    const time = reservation.reservation_time;
+    const formattedDate = new Date(`${date}T${time}`);
+    const day = new Date(date).getUTCDay();
+    const errors = [];
+
+    // No reservations on Tuesdays
+    if (day === 2) {
+      errors.push(new Error("Restaurant is closed on Tuesdays."));
+    }
+
+    // No reservations in the past
+    if (formattedDate < new Date()) {
+      errors.push(new Error("Reservation must be in the future."));
+    }
+
+    return errors;
+  }
+
   const submitHandler = (event) => {
     event.preventDefault();
-    createReservation(reservation)
+    const abortController = new AbortController();
+
+    const errors = hasValidDate(reservation);
+    if (errors.length) {
+      return setReservationErrors(errors);
+    }
+
+    createReservation(reservation, abortController.signal)
       .then(history.push(`/dashboard?date=${reservation.reservation_date}`))
-      .catch(setReservationError);
+      .catch(setReservationErrors);
+
+    return () => abortController.abort();
   };
 
   return (
     <section>
       <h1>Create a Reservation:</h1>
-      <ErrorAlert error={reservationError} />
+      <ReservationErrors errors={reservationErrors} />
       <form onSubmit={submitHandler}>
         <fieldset>
           <div>

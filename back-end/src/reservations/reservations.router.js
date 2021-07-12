@@ -14,6 +14,4 @@ router
   .get(controller.list)
   .all(methodNotAllowed);
 
-// router.route("/new").all(methodNotAllowed);
-
 module.exports = router;

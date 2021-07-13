@@ -74,7 +74,7 @@ function hasValidDate(req, res, next) {
   if (reservation_date < new Date()) {
     return next({
       status: 400,
-      message: `Reservation must be set in the future`,
+      message: `Reservation must be in the future`,
     });
   }
   next();
@@ -82,14 +82,30 @@ function hasValidDate(req, res, next) {
 
 function hasValidTime(req, res, next) {
   const { data = {} } = req.body;
+  const time = data["reservation_time"];
 
-  if (/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(data["reservation_time"])) {
-    return next();
+  if (!/^([0-1][0-9]|2[0-3]):([0-5][0-9])$/.test(time)) {
+    next({
+      status: 400,
+      message: `Invalid reservation_time`,
+    });
   }
-  next({
-    status: 400,
-    message: `Invalid reservation_time`,
-  });
+
+  const hours = Number(time.split(":")[0]);
+  const minutes = Number(time.split(":")[1]);
+  if (hours < 10 || (hours === 10 && minutes < 30)) {
+    next({
+      status: 400,
+      message: `Reservation must be after 10:30AM`,
+    });
+  }
+  if (hours > 21 || (hours === 21 && minutes > 30)) {
+    next({
+      status: 400,
+      message: `Reservation must be before 9:30PM`,
+    });
+  }
+  next();
 }
 
 function hasValidNumber(req, res, next) {

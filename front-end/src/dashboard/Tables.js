@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Tables = ({ tables }) => {
+export const Tables = ({ tables, makeTableFree }) => {
   return (
     <div>
       {tables.map((table) => (
@@ -11,6 +11,14 @@ export const Tables = ({ tables }) => {
           <p data-table-id-status={table.table_id}>
             {table.occupied ? "Occupied" : "Free"}
           </p>
+          {table.occupied ? (
+            <button
+              data-table-id-finish={table.table_id}
+              onClick={() => makeTableFree(table.table_id)}
+            >
+              Finish
+            </button>
+          ) : null}
         </div>
       ))}
     </div>

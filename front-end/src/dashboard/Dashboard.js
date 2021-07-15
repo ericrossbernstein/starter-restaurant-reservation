@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listReservations, listTables } from "../utils/api";
+import { listReservations, listTables, freeTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { next, previous, today } from "../utils/date-time";
 import { useHistory } from "react-router-dom";
@@ -33,6 +33,20 @@ function Dashboard({ date }) {
     return () => abortController.abort();
   }
 
+  async function makeTableFree(table_id) {
+    const abortController = new AbortController();
+    const result = window.confirm(
+      "Is this table ready to seat new guests? This cannot be undone."
+    );
+
+    if (result) {
+      await freeTable(table_id, abortController.signal);
+      loadDashboard();
+    }
+
+    return () => abortController.abort();
+  }
+
   return (
     <main>
       <h1>Dashboard</h1>
@@ -42,7 +56,7 @@ function Dashboard({ date }) {
       <ErrorAlert error={reservationsError} />
       <Reservations reservations={reservations} />
       <hr></hr>
-      <Tables tables={tables} />
+      <Tables tables={tables} makeTableFree={makeTableFree} />
       <div>
         <button
           onClick={() => history.push(`/dashboard?date=${previous(date)}`)}

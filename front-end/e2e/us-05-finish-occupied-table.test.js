@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { setDefaultOptions } = require('expect-puppeteer');
+const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 
@@ -45,6 +45,7 @@ describe("US-05 - Finish an occupied table - E2E", () => {
         table_name: `#${Date.now().toString(10)}`,
         capacity: 99,
         reservation_id: reservation.reservation_id,
+        occupied: true,
       });
 
       page = await browser.newPage();

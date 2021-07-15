@@ -18,14 +18,13 @@ export const ReservationSeat = () => {
   }, [reservation_id]);
 
   const changeHandler = async (event) => {
-    console.log("tables", tables);
-
     await setTableId(event.target.value);
   };
 
   const submitHandler = async (event) => {
     event.preventDefault();
     event.stopPropagation();
+
     await updateTable(reservation.reservation_id, tableId);
     history.push("/dashboard");
   };
@@ -45,7 +44,11 @@ export const ReservationSeat = () => {
             >
               <option value="">- Select a table -</option>
               {tables.map((table) => (
-                <option key={table.table_id} value={table.table_id}>
+                <option
+                  key={table.table_id}
+                  value={table.table_id}
+                  disabled={table.capacity < reservation.people}
+                >
                   {table.table_name} - {table.capacity}
                 </option>
               ))}

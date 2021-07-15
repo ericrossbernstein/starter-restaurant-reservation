@@ -13,7 +13,7 @@ async function tableExists(req, res, next) {
     res.locals.table = table;
     return next();
   }
-  next({ status: 404, message: `Table cannot be found.` });
+  next({ status: 404, message: `Table ${table_id} cannot be found.` });
 }
 
 function hasValidName(req, res, next) {
@@ -63,6 +63,16 @@ function tableIsFree(req, res, next) {
   next();
 }
 
+function tableIsOccupied(req, res, next) {
+  if (!res.locals.table.occupied) {
+    return next({
+      status: 400,
+      message: `Table is not occupied`,
+    });
+  }
+  next();
+}
+
 async function list(req, res) {
   const data = await tablesService.list();
   res.json({ data });
@@ -75,6 +85,15 @@ async function create(req, res) {
 
 async function update(req, res) {
   const reservation_id = req.body.data.reservation_id;
+  const data = await tablesService.update(
+    reservation_id,
+    res.locals.table.table_id
+  );
+  res.status(200).json({ data });
+}
+
+async function freeTable(req, res) {
+  const reservation_id = null;
   const data = await tablesService.update(
     reservation_id,
     res.locals.table.table_id
@@ -97,5 +116,10 @@ module.exports = {
     hasSufficientCapacity,
     tableIsFree,
     asyncErrorBoundary(update),
+  ],
+  freeTable: [
+    asyncErrorBoundary(tableExists),
+    tableIsOccupied,
+    asyncErrorBoundary(freeTable),
   ],
 };

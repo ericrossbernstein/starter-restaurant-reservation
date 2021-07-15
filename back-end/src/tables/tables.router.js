@@ -8,6 +8,10 @@ router
   .get(controller.list)
   .all(methodNotAllowed);
 
-router.route("/:table_id/seat").put(controller.update).all(methodNotAllowed);
+router
+  .route("/:table_id/seat")
+  .put(controller.update)
+  .delete(controller.freeTable)
+  .all(methodNotAllowed);
 
 module.exports = router;

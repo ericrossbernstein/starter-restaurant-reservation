@@ -1,24 +1,6 @@
 const reservationsService = require("./reservations.service.js");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
-
-function hasProperties(...properties) {
-  return function (req, res, next) {
-    const { data = {} } = req.body;
-
-    try {
-      properties.forEach((property) => {
-        if (!data[property]) {
-          const error = new Error(`A '${property}' property is required.`);
-          error.status = 400;
-          throw error;
-        }
-      });
-      next();
-    } catch (error) {
-      next(error);
-    }
-  };
-}
+const hasProperties = require("../errors/hasProperties");
 
 const hasRequiredProperties = hasProperties(
   "first_name",
@@ -120,6 +102,20 @@ function hasValidNumber(req, res, next) {
   next();
 }
 
+async function reservationExists(req, res, next) {
+  const reservation_id =
+    req.params.reservation_id || req.body.data.reservation_id;
+  const reservation = await reservationsService.read(reservation_id);
+  if (reservation) {
+    res.locals.reservation = reservation;
+    return next();
+  }
+  next({
+    status: 404,
+    message: `Reservation ${reservation_id} cannot be found.`,
+  });
+}
+
 /**
  * List handler for reservation resources
  */
@@ -129,12 +125,19 @@ async function list(req, res) {
   res.json({ data });
 }
 
+async function read(req, res) {
+  const data = res.locals.reservation;
+  res.json({ data });
+}
+
 async function create(req, res) {
   const data = await reservationsService.create(req.body.data);
   res.status(201).json({ data });
 }
 
 module.exports = {
+  list: asyncErrorBoundary(list),
+  read: [reservationExists, asyncErrorBoundary(read)],
   create: [
     hasOnlyValidProperties,
     hasRequiredProperties,
@@ -143,5 +146,5 @@ module.exports = {
     hasValidNumber,
     asyncErrorBoundary(create),
   ],
-  list: asyncErrorBoundary(list),
+  reservationExists,
 };

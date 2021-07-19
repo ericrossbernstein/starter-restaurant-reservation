@@ -84,6 +84,16 @@ export async function readReservation(reservation_id, signal) {
   return await fetchJson(url, { headers, signal }, []);
 }
 
+export async function updateStatus(reservation_id, status) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+  const options = {
+    method: "PUT",
+    body: JSON.stringify({ data: { status } }),
+    headers,
+  };
+  return await fetchJson(url, options);
+}
+
 export async function listTables(params, signal) {
   const url = `${API_BASE_URL}/tables`;
   return await fetchJson(url, { headers, signal }, []);
@@ -110,7 +120,7 @@ export async function updateTable(reservation_id, table_id) {
   return await fetchJson(url, options);
 }
 
-export async function freeTable(table_id, signal) {
+export async function finishTable(table_id, signal) {
   const url = `${API_BASE_URL}/tables/${table_id}/seat`;
   const options = { method: "DELETE", signal };
   return await fetchJson(url, options);

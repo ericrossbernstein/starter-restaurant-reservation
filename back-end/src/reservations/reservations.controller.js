@@ -18,6 +18,7 @@ const VALID_PROPERTIES = [
   "reservation_date",
   "reservation_time",
   "people",
+  "status",
 ];
 
 function hasOnlyValidProperties(req, res, next) {
@@ -102,6 +103,38 @@ function hasValidNumber(req, res, next) {
   next();
 }
 
+function hasValidStatus(req, res, next) {
+  const { status } = req.body.data;
+  const currentStatus = res.locals.reservation.status;
+
+  if (currentStatus === "finished") {
+    return next({
+      status: 400,
+      message: `Reservation status is finished`,
+    });
+  }
+  if (status === "booked" || status === "seated" || status === "finished") {
+    res.locals.status = status;
+    return next();
+  }
+  next({
+    status: 400,
+    message: `Invalid status: ${status}`,
+  });
+}
+
+function isBooked(req, res, next) {
+  const { status } = req.body.data;
+
+  if (status && status !== "booked") {
+    return next({
+      status: 400,
+      message: `Invalid status: ${status}`,
+    });
+  }
+  next();
+}
+
 async function reservationExists(req, res, next) {
   const reservation_id =
     req.params.reservation_id || req.body.data.reservation_id;
@@ -135,6 +168,13 @@ async function create(req, res) {
   res.status(201).json({ data });
 }
 
+async function update(req, res) {
+  const { status } = res.locals;
+  const { reservation_id } = res.locals.reservation;
+  const data = await reservationsService.update(reservation_id, status);
+  res.status(200).json({ data });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   read: [reservationExists, asyncErrorBoundary(read)],
@@ -144,7 +184,9 @@ module.exports = {
     hasValidDate,
     hasValidTime,
     hasValidNumber,
+    isBooked,
     asyncErrorBoundary(create),
   ],
+  update: [reservationExists, hasValidStatus, asyncErrorBoundary(update)],
   reservationExists,
 };

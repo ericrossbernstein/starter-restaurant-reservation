@@ -1,27 +1,41 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export const Reservations = ({ reservations }) => {
-  return (
-    <div>
-      {reservations.map((res) => (
-        <div key={res.reservation_id}>
-          <div>
-            <h3>
-              {res.reservation_id}: {res.first_name} {res.last_name}
-            </h3>
-            <p>{res.mobile_number}</p>
-            <p>{res.reservation_date}</p>
-            <p>{res.reservation_time}</p>
-            <p>{res.people}</p>
-          </div>
-          <div>
-            <Link to={`/reservations/${res.reservation_id}/seat`}>Seat</Link>
-          </div>
+export const Reservations = ({ reservations }) => (
+  <div>{reservations.map(renderReservation)}</div>
+);
+
+function renderReservation(reservation) {
+  const { status } = reservation;
+
+  return status === "finished" ? (
+    ""
+  ) : (
+    <div key={reservation.reservation_id}>
+      <div>
+        <h3>
+          {reservation.reservation_id}: {reservation.first_name}{" "}
+          {reservation.last_name}
+        </h3>
+        <p>Mobile Number: {reservation.mobile_number}</p>
+        <p>Date: {reservation.reservation_date}</p>
+        <p>Time: {reservation.reservation_time}</p>
+        <p>Number of people: {reservation.people}</p>
+        <p data-reservation-id-status={reservation.reservation_id}>
+          Status: {reservation.status}
+        </p>
+      </div>
+      {status === "booked" ? (
+        <div>
+          <Link to={`/reservations/${reservation.reservation_id}/seat`}>
+            Seat
+          </Link>
         </div>
-      ))}
+      ) : (
+        ""
+      )}
     </div>
   );
-};
+}
 
 export default Reservations;

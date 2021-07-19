@@ -17,8 +17,8 @@ export const ReservationSeat = () => {
     readReservation(reservation_id).then(setReservation);
   }, [reservation_id]);
 
-  const changeHandler = async (event) => {
-    await setTableId(event.target.value);
+  const changeHandler = (event) => {
+    setTableId(event.target.value);
   };
 
   const submitHandler = async (event) => {
@@ -47,7 +47,9 @@ export const ReservationSeat = () => {
                 <option
                   key={table.table_id}
                   value={table.table_id}
-                  disabled={table.capacity < reservation.people}
+                  disabled={
+                    table.capacity < reservation.people || table.occupied
+                  }
                 >
                   {table.table_name} - {table.capacity}
                 </option>
@@ -55,8 +57,10 @@ export const ReservationSeat = () => {
             </select>
           </div>
           <div>
+            <button type="button" onClick={() => history.goBack()}>
+              Cancel
+            </button>
             <button type="submit">Submit</button>
-            <button onClick={() => history.goBack()}>Cancel</button>
           </div>
         </fieldset>
       </form>

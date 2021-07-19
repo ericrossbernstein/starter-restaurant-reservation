@@ -164,8 +164,10 @@ export const ReservationNew = () => {
             />
           </div>
           <div>
+            <button type="button" onClick={() => history.goBack()}>
+              Cancel
+            </button>
             <button type="submit">Submit</button>
-            <button onClick={() => history.goBack()}>Cancel</button>
           </div>
         </fieldset>
       </form>

@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Tables = ({ tables, makeTableFree }) => {
+export const Tables = ({ tables, finishHandler }) => {
   return (
     <div>
       {tables.map((table) => (
@@ -14,7 +14,7 @@ export const Tables = ({ tables, makeTableFree }) => {
           {table.occupied ? (
             <button
               data-table-id-finish={table.table_id}
-              onClick={() => makeTableFree(table.table_id)}
+              onClick={() => finishHandler(table.table_id)}
             >
               Finish
             </button>

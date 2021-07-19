@@ -63,6 +63,16 @@ function tableIsFree(req, res, next) {
   next();
 }
 
+function tableIsNotSeated(req, res, next) {
+  if (res.locals.reservation.status === "seated") {
+    return next({
+      status: 400,
+      message: `Table is already seated`,
+    });
+  }
+  next();
+}
+
 function tableIsOccupied(req, res, next) {
   if (!res.locals.table.occupied) {
     return next({
@@ -84,7 +94,7 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
-  const reservation_id = req.body.data.reservation_id;
+  const { reservation_id } = req.body.data;
   const data = await tablesService.update(
     reservation_id,
     res.locals.table.table_id
@@ -92,10 +102,9 @@ async function update(req, res) {
   res.status(200).json({ data });
 }
 
-async function freeTable(req, res) {
-  const reservation_id = null;
-  const data = await tablesService.update(
-    reservation_id,
+async function finish(req, res) {
+  const data = await tablesService.finish(
+    res.locals.table.reservation_id,
     res.locals.table.table_id
   );
   res.status(200).json({ data });
@@ -114,12 +123,13 @@ module.exports = {
     hasReservationId,
     reservationsController.reservationExists,
     hasSufficientCapacity,
+    tableIsNotSeated,
     tableIsFree,
     asyncErrorBoundary(update),
   ],
-  freeTable: [
+  finish: [
     asyncErrorBoundary(tableExists),
     tableIsOccupied,
-    asyncErrorBoundary(freeTable),
+    asyncErrorBoundary(finish),
   ],
 };

@@ -11,7 +11,7 @@ router
 router
   .route("/:table_id/seat")
   .put(controller.update)
-  .delete(controller.freeTable)
+  .delete(controller.finish)
   .all(methodNotAllowed);
 
 module.exports = router;

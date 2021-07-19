@@ -154,7 +154,10 @@ async function reservationExists(req, res, next) {
  */
 async function list(req, res) {
   const date = req.query.date;
-  const data = await reservationsService.list(date);
+  const mobile_number = req.query.mobile_number;
+  const data = await (date
+    ? reservationsService.list(date)
+    : reservationsService.search(mobile_number));
   res.json({ data });
 }
 

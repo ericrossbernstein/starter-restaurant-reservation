@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { createReservation } from "../utils/api";
+import React, { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { readReservation, updateReservation } from "../utils/api";
 import ReservationErrors from "./ReservationErrors";
 import ReservationForm from "./ReservationForm";
 
-export const ReservationNew = () => {
+export const ReservationEdit = () => {
   const initialReservationState = {
     first_name: "",
     last_name: "",
@@ -18,7 +18,20 @@ export const ReservationNew = () => {
     ...initialReservationState,
   });
   const [reservationErrors, setReservationErrors] = useState(null);
+  const { reservation_id } = useParams();
   const history = useHistory();
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    setReservationErrors(null);
+    readReservation(reservation_id, abortController.signal)
+      .then(setReservation)
+      .catch(setReservationErrors);
+
+    return () => abortController.abort();
+  }, [reservation_id]);
+
+  console.log("reservation edit", reservation);
 
   const changeHandler = (event) => {
     if (event.target.name === "people") {
@@ -64,7 +77,7 @@ export const ReservationNew = () => {
     return errors;
   }
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
     const abortController = new AbortController();
 
@@ -73,16 +86,19 @@ export const ReservationNew = () => {
       return setReservationErrors(errors);
     }
 
-    createReservation(reservation, abortController.signal)
-      .then(history.push(`/dashboard?date=${reservation.reservation_date}`))
-      .catch(setReservationErrors);
+    try {
+      await updateReservation(reservation, abortController.signal);
+      history.push(`/dashboard?date=${reservation.reservation_date}`);
+    } catch (error) {
+      setReservationErrors([error]);
+    }
 
     return () => abortController.abort();
   };
 
   return (
     <section>
-      <h1>Create a Reservation:</h1>
+      <h1>Edit Reservation:</h1>
       <ReservationErrors errors={reservationErrors} />
       <ReservationForm
         reservation={reservation}
@@ -93,4 +109,4 @@ export const ReservationNew = () => {
   );
 };
 
-export default ReservationNew;
+export default ReservationEdit;

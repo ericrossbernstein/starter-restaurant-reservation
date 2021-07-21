@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Tables = ({ tables, finishHandler }) => {
+export const TablesList = ({ tables, finishHandler }) => {
   return (
     <div>
       {tables.map((table) => (
@@ -25,4 +25,4 @@ export const Tables = ({ tables, finishHandler }) => {
   );
 };
 
-export default Tables;
+export default TablesList;

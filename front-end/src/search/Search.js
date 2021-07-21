@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { listReservations } from "../utils/api";
+import { listReservations, updateStatus } from "../utils/api";
+import ReservationsList from "../reservation/ReservationsList";
 
 export const Search = () => {
   const [reservations, setReservations] = useState([]);
   const [mobileNumber, setMobileNumber] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const filterResults = false;
 
   const changeHandler = (event) => {
     setMobileNumber(event.target.value);
@@ -18,33 +20,31 @@ export const Search = () => {
       { mobile_number: mobileNumber },
       abortController.signal
     );
-    setReservations(res);
+    await setReservations(res);
     setSubmitted(true);
 
     return () => abortController.abort();
   };
 
-  function renderReservations(reservations) {
-    if (reservations.length) {
-      return reservations.map((reservation) => (
-        <div key={reservation.reservation_id}>
-          <div>
-            <h3>
-              {reservation.reservation_id}: {reservation.first_name}{" "}
-              {reservation.last_name}
-            </h3>
-            <p>Mobile Number: {reservation.mobile_number}</p>
-            <p>Date: {reservation.reservation_date}</p>
-            <p>Time: {reservation.reservation_time}</p>
-            <p>Number of people: {reservation.people}</p>
-            <p>Status: {reservation.status}</p>
-          </div>
-        </div>
-      ));
-    } else {
-      return <h4>No reservations found</h4>;
+  const cancelHandler = async (event) => {
+    const abortController = new AbortController();
+
+    const result = window.confirm(
+      "Do you want to cancel this reservation? This cannot be undone."
+    );
+
+    if (result) {
+      await updateStatus(event.target.value, "cancelled");
+      let res = await listReservations(
+        { mobile_number: mobileNumber },
+        abortController.signal
+      );
+      await setReservations(res);
+      setSubmitted(true);
     }
-  }
+
+    return () => abortController.abort();
+  };
 
   return (
     <div>
@@ -67,7 +67,15 @@ export const Search = () => {
           <button type="submit">Find</button>
         </form>
       </div>
-      {submitted ? renderReservations(reservations) : ""}
+      {submitted ? (
+        <ReservationsList
+          reservations={reservations}
+          filterResults={filterResults}
+          cancelHandler={cancelHandler}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 };

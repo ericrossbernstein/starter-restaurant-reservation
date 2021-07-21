@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { listReservations, listTables, finishTable } from "../utils/api";
+import {
+  listReservations,
+  listTables,
+  finishTable,
+  updateStatus,
+} from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { next, previous, today } from "../utils/date-time";
 import { useHistory } from "react-router-dom";
-import Reservations from "./Reservations";
-import Tables from "./Tables";
+import ReservationsList from "../reservation/ReservationsList";
+import TablesList from "../tables/TablesList";
 
 /**
  * Defines the dashboard page.
@@ -17,6 +22,7 @@ function Dashboard({ date }) {
   const [reservationsError, setReservationsError] = useState(null);
   const [tables, setTables] = useState([]);
   const history = useHistory();
+  const filterResults = true;
 
   useEffect(loadDashboard, [date]);
 
@@ -47,6 +53,17 @@ function Dashboard({ date }) {
     return () => abortController.abort();
   }
 
+  const cancelHandler = async (event) => {
+    const result = window.confirm(
+      "Do you want to cancel this reservation? This cannot be undone."
+    );
+
+    if (result) {
+      await updateStatus(event.target.value, "cancelled");
+      loadDashboard();
+    }
+  };
+
   return (
     <main>
       <h1>Dashboard</h1>
@@ -54,9 +71,6 @@ function Dashboard({ date }) {
         <h4 className="mb-0">Reservations for ${date}</h4>
       </div>
       <ErrorAlert error={reservationsError} />
-      <Reservations reservations={reservations} />
-      <hr></hr>
-      <Tables tables={tables} finishHandler={finishHandler} />
       <div>
         <button
           onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
@@ -70,6 +84,13 @@ function Dashboard({ date }) {
           Today
         </button>
       </div>
+      <ReservationsList
+        reservations={reservations}
+        filterResults={filterResults}
+        cancelHandler={cancelHandler}
+      />
+      <hr></hr>
+      <TablesList tables={tables} finishHandler={finishHandler} />
     </main>
   );
 }

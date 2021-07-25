@@ -17,8 +17,8 @@ function Menu() {
         </Link>
       </header>
       <nav>
-        <div className="group-row">
-          <ul>
+        <div>
+          <ul className="group-col no-gap">
             <li className="item">
               <Link to="/dashboard">
                 <span />

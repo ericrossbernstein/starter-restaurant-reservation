@@ -30,8 +30,8 @@ export const ReservationSeat = () => {
   };
 
   return (
-    <div>
-      <h3>Reservation Seat</h3>
+    <section>
+      <h2>Seat Reservation</h2>
       <form onSubmit={submitHandler}>
         <fieldset>
           <div>
@@ -56,15 +56,21 @@ export const ReservationSeat = () => {
               ))}
             </select>
           </div>
-          <div>
-            <button type="button" onClick={() => history.goBack()}>
+          <div className="group-row">
+            <button
+              className="black"
+              type="button"
+              onClick={() => history.goBack()}
+            >
               Cancel
             </button>
-            <button type="submit">Submit</button>
+            <button className="yellow" type="submit">
+              Submit
+            </button>
           </div>
         </fieldset>
       </form>
-    </div>
+    </section>
   );
 };
 

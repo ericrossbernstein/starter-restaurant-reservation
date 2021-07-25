@@ -88,11 +88,17 @@ export const ReservationForm = ({
               onChange={changeHandler}
             />
           </div>
-          <div>
-            <button type="button" onClick={() => history.goBack()}>
+          <div className="group-row">
+            <button
+              className="black"
+              type="button"
+              onClick={() => history.goBack()}
+            >
               Cancel
             </button>
-            <button type="submit">Submit</button>
+            <button className="yellow" type="submit">
+              Submit
+            </button>
           </div>
         </fieldset>
       </form>

@@ -47,8 +47,8 @@ export const Search = () => {
   };
 
   return (
-    <div>
-      <h3>Search</h3>
+    <section>
+      <h2>Search</h2>
       <div>
         <form onSubmit={submitHandler}>
           <div>
@@ -64,7 +64,9 @@ export const Search = () => {
               onChange={changeHandler}
             />
           </div>
-          <button type="submit">Find</button>
+          <button type="submit" className="yellow">
+            Find
+          </button>
         </form>
       </div>
       {submitted ? (
@@ -76,7 +78,7 @@ export const Search = () => {
       ) : (
         ""
       )}
-    </div>
+    </section>
   );
 };
 

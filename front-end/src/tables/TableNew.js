@@ -42,7 +42,7 @@ export const TableNew = () => {
 
   return (
     <section>
-      <h1>Create a Table:</h1>
+      <h2>Create a Table:</h2>
       <TableErrors errors={tableErrors} />
       <form onSubmit={submitHandler}>
         <fieldset>
@@ -71,9 +71,13 @@ export const TableNew = () => {
               onChange={changeHandler}
             />
           </div>
-          <div>
-            <button type="submit">Submit</button>
-            <button onClick={() => history.goBack()}>Cancel</button>
+          <div className="group-row">
+            <button className="black" onClick={() => history.goBack()}>
+              Cancel
+            </button>
+            <button className="yellow" type="submit">
+              Submit
+            </button>
           </div>
         </fieldset>
       </form>

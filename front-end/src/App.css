@@ -315,7 +315,7 @@ fieldset {
 
 /* ------------ DESKTOP ------------ */
 
-@media all and (min-width: 1000px) {
+@media all and (min-width: 900px) {
   section {
     padding: 0 10%;
   }

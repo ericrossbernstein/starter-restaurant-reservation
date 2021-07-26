@@ -1,24 +1,18 @@
 # **Periodic Tables:** Restaurant Reservation System
 
----
-
 ## Summary
 
 This web application was created as my capstone project for Thinkful's Engineering Flex Program. The prompt called for the development of a React app, Node + Express server, and PostgreSQL database for Periodic Tables, a fictional startup that is creating a reservation system for fine dining restaurants. The software is meant to be used only by the restaurant personnel when a customer calls to request a reservation. Periodic Tables allows users to create and edit a reservation, list all reservations for a particular date, search for reservations by mobile number, create a new table, seat a reservation by assigning it to a particular table, free up a table by finishing a reservation, and cancel a reservation. The original assignment and user stories can be found at Thinkful's [original repo](https://github.com/Thinkful-Ed/starter-restaurant-reservation).
 
----
-
 ## Deployed Application
 
----
+https://periodic-tables-web-client.herokuapp.com
 
 ## Tech Stack
 
 **Client:** React, Javascript, CSS, HTML
 **Server:** Node, Express, Knex
 **Database:** PostgreSQL
-
----
 
 ## Client
 
@@ -58,8 +52,6 @@ The Search page allows the client to search for reservations by a mobile number
 
 ![Search](./front-end/app-screenshots/Search.png)
 
----
-
 ## API
 
 | Request | Path                                   | Description                                                 |
@@ -75,8 +67,6 @@ The Search page allows the client to search for reservations by a mobile number
 | POST    | /tables                                | create a new table                                          |
 | PUT     | /tables/:table_id/seat                 | update a table and assign it to a reservation               |
 | DELETE  | /tables/:table_id/seat                 | free an occupied table by deleting assigned reservation_id  |
-
----
 
 ## Installation
 
